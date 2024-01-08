@@ -221,9 +221,11 @@ impl<T: Hasher> MerkleProof<T> {
             .collect();
         // Sorting leaves by indexes in case they weren't sorted already
         leaf_tuples.sort_by(|(a, _), (b, _)| a.cmp(b));
+
+        let (sorted_indices, _): (Vec<_>, Vec<_>) = leaf_tuples.iter().cloned().unzip();
         // Getting back _sorted_ indices
         let proof_indices_by_layers =
-            utils::indices::proof_indices_by_layers(leaf_indices, total_leaves_count);
+            utils::indices::proof_indices_by_layers(&sorted_indices, total_leaves_count);
 
         // The next lines copy hashes from proof hashes and group them by layer index
         let mut proof_layers: Vec<Vec<(usize, T::Hash)>> = Vec::with_capacity(tree_depth + 1);
