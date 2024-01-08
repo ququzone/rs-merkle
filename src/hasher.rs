@@ -57,12 +57,16 @@ pub trait Hasher: Clone {
     /// [`MerkleTree`]: crate::MerkleTree
     /// [`PartialTree`]: crate::PartialTree
     fn concat_and_hash(left: &Self::Hash, right: Option<&Self::Hash>) -> Self::Hash {
-        let mut concatenated: Vec<u8> = (*left).into();
+        //let mut concatenated: Vec<u8> = (*left).into();
 
         match right {
             Some(right_node) => {
-                let mut right_node_clone: Vec<u8> = (*right_node).into();
-                concatenated.append(&mut right_node_clone);
+                let mut tuple = vec![(*left).into(), (*right_node).into()];
+                tuple.sort_by(|a, b| a.cmp(b));
+
+                let mut concatenated = tuple[0].clone();
+                concatenated.append(&mut tuple[1]);
+
                 Self::hash(&concatenated)
             }
             None => *left,
